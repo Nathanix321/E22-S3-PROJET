@@ -32,22 +32,25 @@ void setup() {
   // RTM_TimerCalc 1.31,  RuntimeMicro.com
   // Timer-3 16-bit, Mode-14 Fast, Top=ICR
   // 500,000 Hz Frequency, Clock is 16 MHz
-
-  DC_MOT = 0.5;
+  
+  DC_MOT = 0.05;
 
   TCCR3B = 0x18; // 0001 1000, Disable Timer 
   TCCR3A = 0xA2; // 1010 0010
 
-  ICR3 = 32-1; // Low PWM Resolution, 3.125% Duty step-size 
-  OCR3A = (int) (ICR3 * DC_MOT);
+  ICR3 = 320-1;
+  OCR3A = (int) (ICR3 * 0.25);
   OCR3B = (int) (ICR3 * 0.50);
   TCNT3=0x0;
 
-  pinMode(5, OUTPUT); // OC3a, D5
-  //pinMode(6, OUTPUT); // OC3b
+  pinMode(5, OUTPUT); // OC3a
+  pinMode(2, OUTPUT); // OC3b
 
   TCCR3B |= 1; // Prescale=1, Enable Timer 
 
+ 
+
+  
   /*----------------------------------------PWM GÉNÉRATRICE----------------------------------------*/
 
   // RTM_TimerCalc 1.31,  RuntimeMicro.com
@@ -59,15 +62,16 @@ void setup() {
   TCCR4B = 0x18; // 0001 1000, Disable Timer 
   TCCR4A = 0xA2; // 1010 0010
 
-  ICR4 = 160-1; //0.625 Duty step-size
-  OCR4A = (int) (ICR4 * DC_GEN);
+  ICR4 = 320-1;
+  OCR4A = (int) (ICR4 * 0.25);
   OCR4B = (int) (ICR4 * 0.50);
   TCNT4=0x0;
 
-  pinMode(15, OUTPUT); // OC4a, D6
-  //pinMode(16, OUTPUT); // OC4b
+  pinMode(6, OUTPUT); // OC4a
+  //pinMode(7, OUTPUT); // OC4b
 
   TCCR4B |= 1; // Prescale=1, Enable Timer 
+ 
 
   /*----------------------------------------SETUP PINS----------------------------------------*/
   pinMode(pinV1I_MOT, INPUT);
@@ -94,9 +98,12 @@ void setup() {
 }
 
 void loop(){
-  DC_MOT=0.03125*round(analogRead(pinPOT)/16);
-  OCR3A = (int) (ICR3 * DC_MOT);
+  /*DC_MOT=0.003125*round(analogRead(pinPOT)/3.2);
+  OCR3A = (int) (ICR3 * DC_MOT);*/
 
+  DC_GEN=0.003125*round(analogRead(pinPOT)/3.2);
+  OCR4A = (int) (ICR4 * DC_GEN);
+  Serial.print(DC_GEN);
 }
 
 float calcul_Temp(int pin){
